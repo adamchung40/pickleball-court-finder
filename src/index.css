@@ -1,0 +1,74 @@
+:root {
+  --bg: #f7f8f5;
+  --panel: #ffffff;
+  --text: #1c2420;
+  --muted: #5f6b64;
+  --border: #dde3dc;
+  --accent: #1f6f43;
+  --accent-soft: #e6f2ea;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; }
+h1 { margin: 0; font-size: 1.4rem; }
+.muted { color: var(--muted); font-size: 0.875rem; margin: 0.25rem 0; }
+.error { color: #b42318; font-size: 0.875rem; margin: 0; }
+
+/* Layout: sidebar + map side by side; stacked on phones */
+.app { display: flex; height: 100vh; }
+.sidebar {
+  width: 360px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: var(--panel);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+}
+.map-wrap { flex: 1; min-width: 0; }
+.map { height: 100%; width: 100%; }
+
+@media (max-width: 720px) {
+  .app { flex-direction: column-reverse; height: auto; }
+  .sidebar { width: 100%; border-right: none; }
+  .map-wrap { height: 50vh; }
+}
+
+/* Filters */
+.filter-bar { display: flex; flex-direction: column; gap: 0.5rem; }
+.filter-row { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+input[type='search'], select, button {
+  font: inherit;
+  padding: 0.45rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+}
+input[type='search'] { width: 100%; }
+button { cursor: pointer; background: var(--accent); color: #fff; border-color: var(--accent); }
+button:disabled { opacity: 0.6; cursor: wait; }
+.check { display: flex; align-items: center; gap: 0.3rem; font-size: 0.9rem; }
+
+/* Court list */
+.count { margin: 0; }
+.court-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.5rem; }
+.court-card {
+  width: 100%;
+  text-align: left;
+  background: #fff;
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 0.75rem;
+}
+.court-card.selected { border-color: var(--accent); background: var(--accent-soft); }
+.court-card-top { display: flex; justify-content: space-between; gap: 0.5rem; }
+.distance { color: var(--accent); font-weight: 600; white-space: nowrap; }
+.tags { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.4rem; }
+.tag { font-size: 0.75rem; padding: 0.1rem 0.45rem; border-radius: 999px; background: var(--accent-soft); color: var(--accent); }
+.empty { color: var(--muted); }
+.court-card.selected .tag { background: #fff; }

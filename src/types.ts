@@ -8,7 +8,7 @@ export type Court = {
   indoor: boolean
   lights: boolean
   free: boolean
-  surface: 'concrete' | 'asphalt' | 'sport-court' | 'wood'
+  surface?: 'concrete' | 'asphalt' | 'sport-court' | 'wood'
   notes?: string
 }
 

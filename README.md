@@ -47,14 +47,14 @@ supabase/schema.sql        # DB tables + row-level security for later phases
 ## Roadmap
 
 ### Phase 1: Local MVP ✅ (you are here)
-- [ ] Run it, read every file, and change something small (colors, a new filter) to learn how the pieces fit together.
-- [ ] Replace the sample data with 10–15 real Atlanta courts you've checked.
-- [ ] Push to GitHub and deploy to Vercel (import repo → Framework: Vite → Deploy).
+- [X] Run it, read every file, and change something small (colors, a new filter) to learn how the pieces fit together.
+- [X] Replace the sample data with 10–15 real Atlanta courts you've checked.
+- [X] Push to GitHub and deploy to Vercel (import repo → Framework: Vite → Deploy).
 
 ### Phase 2: Real data (Supabase)
-- [ ] Create a free Supabase project and run `supabase/schema.sql`.
-- [ ] `npm i @supabase/supabase-js`. Add `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` to `.env.local` (git-ignored).
-- [ ] Write `src/lib/api.ts` → `fetchCourts()`. In `App.tsx`, swap `SAMPLE_COURTS` for fetched data and add loading/error states.
+- [X] Create a free Supabase project and run `supabase/schema.sql`.
+- [X] `npm i @supabase/supabase-js`. Add `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` to `.env.local` (git-ignored).
+- [X] Write `src/lib/api.ts` → `fetchCourts()`. In `App.tsx`, swap `SAMPLE_COURTS` for fetched data and add loading/error states.
 - [ ] Optional: add TanStack Query for caching.
 
 ### Phase 3: Court detail and routing

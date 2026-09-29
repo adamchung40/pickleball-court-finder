@@ -1,19 +1,45 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { CourtList } from './components/CourtList'
 import { CourtMap } from './components/CourtMap'
 import { FilterBar } from './components/FilterBar'
-import { SAMPLE_COURTS } from './data/courts'
 import { useGeolocation } from './hooks/useGeolocation'
+import { fetchCourts } from './lib/api'
 import { applyFilters, DEFAULT_FILTERS } from './lib/filters'
-import type { Filters } from './types'
+import type { Court, Filters } from './types'
 
 export default function App() {
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS)
   const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [allCourts, setAllCourts] = useState<Court[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [loadError, setLoadError] = useState<string | null>(null)
   const { location, status, error, locate } = useGeolocation()
 
-  // Phase 2: replace SAMPLE_COURTS with data fetched from Supabase.
-  const courts = useMemo(() => applyFilters(SAMPLE_COURTS, filters, location), [filters, location])
+  useEffect(() => {
+    let active = true
+
+    async function loadCourts() {
+      try {
+        setIsLoading(true)
+        setLoadError(null)
+        const fetchedCourts = await fetchCourts()
+        if (active) setAllCourts(fetchedCourts)
+      } catch (fetchError) {
+        if (active) {
+          setLoadError(fetchError instanceof Error ? fetchError.message : 'Unable to load courts.')
+        }
+      } finally {
+        if (active) setIsLoading(false)
+      }
+    }
+
+    void loadCourts()
+    return () => {
+      active = false
+    }
+  }, [])
+
+  const courts = useMemo(() => applyFilters(allCourts, filters, location), [allCourts, filters, location])
 
   return (
     <div className="app">
@@ -29,10 +55,22 @@ export default function App() {
           locating={status === 'locating'}
           locationError={error}
         />
-        <p className="muted count">
-          {courts.length} {courts.length === 1 ? 'location' : 'locations'}
-        </p>
-        <CourtList courts={courts} selectedId={selectedId} onSelect={setSelectedId} />
+        {isLoading ? (
+          <p className="muted count" role="status">Loading courts...</p>
+        ) : loadError ? (
+          <p className="empty" role="alert">Unable to load courts: {loadError}</p>
+        ) : (
+          <>
+            <p className="muted count">
+              {courts.length} {courts.length === 1 ? 'location' : 'locations'}
+            </p>
+            {allCourts.length === 0 ? (
+              <p className="empty">No approved courts found in Supabase.</p>
+            ) : (
+              <CourtList courts={courts} selectedId={selectedId} onSelect={setSelectedId} />
+            )}
+          </>
+        )}
       </aside>
 
       <main className="map-wrap">

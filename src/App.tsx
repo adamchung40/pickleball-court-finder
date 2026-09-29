@@ -1,43 +1,25 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { CourtList } from './components/CourtList'
 import { CourtMap } from './components/CourtMap'
 import { FilterBar } from './components/FilterBar'
 import { useGeolocation } from './hooks/useGeolocation'
 import { fetchCourts } from './lib/api'
 import { applyFilters, DEFAULT_FILTERS } from './lib/filters'
-import type { Court, Filters } from './types'
+import type { Filters } from './types'
 
 export default function App() {
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS)
   const [selectedId, setSelectedId] = useState<string | null>(null)
-  const [allCourts, setAllCourts] = useState<Court[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [loadError, setLoadError] = useState<string | null>(null)
   const { location, status, error, locate } = useGeolocation()
-
-  useEffect(() => {
-    let active = true
-
-    async function loadCourts() {
-      try {
-        setIsLoading(true)
-        setLoadError(null)
-        const fetchedCourts = await fetchCourts()
-        if (active) setAllCourts(fetchedCourts)
-      } catch (fetchError) {
-        if (active) {
-          setLoadError(fetchError instanceof Error ? fetchError.message : 'Unable to load courts.')
-        }
-      } finally {
-        if (active) setIsLoading(false)
-      }
-    }
-
-    void loadCourts()
-    return () => {
-      active = false
-    }
-  }, [])
+  const {
+    data: allCourts = [],
+    isPending,
+    error: courtsError,
+  } = useQuery({
+    queryKey: ['courts'],
+    queryFn: fetchCourts,
+  })
 
   const courts = useMemo(() => applyFilters(allCourts, filters, location), [allCourts, filters, location])
 
@@ -55,12 +37,15 @@ export default function App() {
           locating={status === 'locating'}
           locationError={error}
         />
-        {isLoading ? (
+        {isPending ? (
           <p className="muted count" role="status">Loading courts...</p>
-        ) : loadError ? (
-          <p className="empty" role="alert">Unable to load courts: {loadError}</p>
+        ) : courtsError && allCourts.length === 0 ? (
+          <p className="empty" role="alert">Unable to load courts: {courtsError.message}</p>
         ) : (
           <>
+            {courtsError && (
+              <p className="empty" role="status">Showing cached courts; refresh failed: {courtsError.message}</p>
+            )}
             <p className="muted count">
               {courts.length} {courts.length === 1 ? 'location' : 'locations'}
             </p>

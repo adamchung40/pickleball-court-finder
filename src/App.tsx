@@ -1,15 +1,18 @@
 import { useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { useSearchParams } from 'react-router-dom'
 import { CourtList } from './components/CourtList'
 import { CourtMap } from './components/CourtMap'
 import { FilterBar } from './components/FilterBar'
 import { useGeolocation } from './hooks/useGeolocation'
 import { fetchCourts } from './lib/api'
-import { applyFilters, DEFAULT_FILTERS } from './lib/filters'
+import { filtersFromSearchParams, searchParamsFromFilters } from './lib/filterUrl'
+import { applyFilters } from './lib/filters'
 import type { Filters } from './types'
 
 export default function App() {
-  const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS)
+  const [searchParams, setSearchParams] = useSearchParams()
+  const filters = filtersFromSearchParams(searchParams)
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const { location, status, error, locate } = useGeolocation()
   const {
@@ -20,6 +23,19 @@ export default function App() {
     queryKey: ['courts'],
     queryFn: fetchCourts,
   })
+
+  const setFilters = (nextFilters: Filters) => {
+    const searchOnlyChanged =
+      nextFilters.search !== filters.search &&
+      nextFilters.setting === filters.setting &&
+      nextFilters.lightsOnly === filters.lightsOnly &&
+      nextFilters.freeOnly === filters.freeOnly
+
+    setSearchParams(
+      (currentParams) => searchParamsFromFilters(currentParams, nextFilters),
+      { replace: searchOnlyChanged },
+    )
+  }
 
   const courts = useMemo(() => applyFilters(allCourts, filters, location), [allCourts, filters, location])
 

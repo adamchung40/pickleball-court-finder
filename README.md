@@ -59,7 +59,7 @@ supabase/schema.sql        # DB tables + row-level security for later phases
 
 ### Phase 3: Court detail and routing
 - [X] `npm i react-router-dom`. Add a `/courts/:id` page showing details, notes and a "Directions" link (`https://www.google.com/maps/dir/?api=1&destination=LAT,LNG`).
-- [ ] Put the filters in the URL query string so filtered views can be shared.
+- [X] Put the filters in the URL query string so filtered views can be shared.
 
 ### Phase 4: User submissions
 - [ ] Supabase Auth (magic link or Google).

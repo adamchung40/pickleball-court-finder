@@ -1,4 +1,5 @@
 import { formatMiles } from '../lib/geo'
+import { Link } from 'react-router-dom'
 import type { CourtWithDistance } from '../types'
 
 type Props = {
@@ -33,6 +34,9 @@ export function CourtList({ courts, selectedId, onSelect }: Props) {
               <span className="tag">{c.free ? 'Free' : 'Paid'}</span>
             </div>
           </button>
+          <Link className="court-details-link" to={`/courts/${encodeURIComponent(c.id)}`}>
+            View details
+          </Link>
         </li>
       ))}
     </ul>
